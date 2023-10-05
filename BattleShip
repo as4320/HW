@@ -1,0 +1,166 @@
+class Game(object):
+
+    letters = ("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
+    ships_rules = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+    field_size = len(letters)
+
+    def __init__(self):
+
+        self.players = []
+        self.current_player = None
+        self.next_player = None
+        self.status = 'prepare'
+
+def start_game(self)
+def status_check(self)
+def add_player(self, player)
+def ships_setup(self, player)
+def draw(self)
+def switch_players(self)
+def clear_screen()
+
+    class Player(object):
+
+        def __init__(self, name, is_ai, skill):
+            self.name = name
+            self.is_ai = is_ai
+            self.auto_ship_setup = True
+            self.skill = skill
+            self.message = []
+            self.ships = []
+            self.enemy_ships = []
+            self.field = None
+
+    def get_input(self, input_type)
+        def make_shot(self, target_player)
+            def receive_shot(self, shot)
+
+    class Field(object):
+
+        def __init__(self, size):
+            self.size = size
+            self.map = [[Cell.empty_cell for _ in range(size)] for _ in range(size)]
+            self.radar = [[Cell.empty_cell for _ in range(size)] for _ in range(size)]
+            self.weight = [[1 for _ in range(size)] for _ in range(size)]
+
+        def draw_field(self, element)
+                    def check_ship_fits(self, ship, element)
+
+                        def mark_destroyed_ship(self, ship, element)
+
+                        def add_ship_to_field(self, ship, element)
+
+                        def get_max_weight_cells(self)
+
+                        def recalculate_weight_map(self, available_ships)
+                            class Ship:
+
+                                def __init__(self, size, x, y, rotation):
+                                    self.size = size
+                                    self.hp = size
+                                    self.x = x
+                                    self.y = y
+                                    self.rotation = rotation
+
+if __name__ == '__main__':
+
+    players = []
+    players.append(Player(name='Username', is_ai=False, auto_ship=True, skill=1))
+    players.append(Player(name='IQ180', is_ai=True, auto_ship=True, skill=1))
+
+    game = Game()
+
+    while True:
+        game.status_check()
+
+        if game.status == 'prepare':
+            game.add_player(players.pop(0))
+
+        if game.status == 'in game':
+            Game.clear_screen()
+            game.current_player.message.append("Ждём приказа: ")
+            game.draw()
+            game.current_player.message.clear()
+            shot_result = game.current_player.make_shot(game.next_player)
+
+            if shot_result == 'miss':
+                game.next_player.message.append('На этот раз {}, промахнулся! '.format(game.current_player.name))
+                game.next_player.message.append('Ваш ход {}!'.format(game.next_player.name))
+                game.switch_players()
+                continue
+            elif shot_result == 'retry':
+                game.current_player.message.append('Попробуйте еще раз!')
+                continue
+            elif shot_result == 'get':
+                game.current_player.message.append('Отличный выстрел, продолжайте!')
+                game.next_player.message.append('Наш корабль попал под обстрел!')
+                continue
+            elif shot_result == 'kill':
+                game.current_player.message.append('Корабль противника уничтожен!')
+                game.next_player.message.append('Плохие новости, наш корабль был уничтожен :(')
+                continue
+
+        if game.status == 'game over':
+            Game.clear_screen()
+            game.next_player.field.draw_field(FieldPart.main)
+            game.current_player.field.draw_field(FieldPart.main)
+            print('It was the last ship of {}'.format(game.next_player.name))
+            print('{} win the match! Congrats!'.format(game.current_player.name))
+            break
+
+    print('Thanks for playing!')
+    input('')
+
+def recalculate_weight_map(self, available_ships):
+
+    self.weight = [[1 for _ in range(self.size)] for _ in range(self.size)]
+
+    for x in range(self.size):
+        for y in range(self.size):
+            if self.radar[x][y] == Cell.damaged_ship:
+
+                self.weight[x][y] = 0
+
+                if x - 1 >= 0:
+                    if y - 1 >= 0:
+                        self.weight[x - 1][y - 1] = 0
+                    self.weight[x - 1][y] *= 50
+                    if y + 1 < self.size:
+                        self.weight[x - 1][y + 1] = 0
+
+                if y - 1 >= 0:
+                    self.weight[x][y - 1] *= 50
+                if y + 1 < self.size:
+                    self.weight[x][y + 1] *= 50
+
+                if x + 1 < self.size:
+                    if y - 1 >= 0:
+                        self.weight[x + 1][y - 1] = 0
+                    self.weight[x + 1][y] *= 50
+                    if y + 1 < self.size:
+                        self.weight[x + 1][y + 1] = 0
+
+    for ship_size in available_ships:
+        ship = Ship(ship_size, 1, 1, 0)
+        for x in range(self.size):
+            for y in range(self.size):
+                if self.radar[x][y] in (Cell.destroyed_ship, Cell.damaged_ship, Cell.miss_cell) \
+                        or self.weight[x][y] == 0:
+                    self.weight[x][y] = 0
+                    continue
+                for rotation in range(0, 4):
+                    ship.set_position(x, y, rotation)
+                    if self.check_ship_fits(ship, FieldPart.radar):
+                        self.weight[x][y] += 1
+
+def get_max_weight_cells(self):
+    weights = {}
+    max_weight = 0
+    for x in range(self.size):
+        for y in range(self.size):
+            if self.weight[x][y] > max_weight:
+                max_weight = self.weight[x][y]
+            weights.setdefault(self.weight[x][y], []).append((x, y))
+
+    return weights[max_weight]
+x, y = choice(self.field.get_max_weight_cells())
